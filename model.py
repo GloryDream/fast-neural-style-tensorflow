@@ -131,7 +131,7 @@ def net(image, training):
 	return y
 
 
-def pretrained_net(image, training):
+def pretrained_net1(image):
 	# Less border effects when padding a little before passing through ..
 	image = tf.pad(image, [[0, 0], [10, 10], [10, 10], [0, 0]], mode='REFLECT')
 
@@ -142,9 +142,13 @@ def pretrained_net(image, training):
 			conv2 = relu(instance_norm(conv2d(conv1, 16, 32, 3, 2)))
 		with tf.variable_scope('conv3'):
 			conv3 = relu(instance_norm(conv2d(conv2, 32, 48, 3, 2)))
-			cat_conv3 = tf.concat([conv3, conv3], axis=-1)
+	return conv3
+
+
+def pretrained_net2(conv, training):
+	with tf.variable_scope('Pretrained'):
 		with tf.variable_scope('conv4'):
-			conv4 = relu(instance_norm(conv2d(cat_conv3, 96, 96, 3, 1)))
+			conv4 = relu(instance_norm(conv2d(conv, 96, 96, 3, 1)))
 		with tf.variable_scope('conv5'):
 			conv5 = relu(instance_norm(conv2d(conv4, 96, 48, 3, 1)))
 		with tf.variable_scope('res1'):

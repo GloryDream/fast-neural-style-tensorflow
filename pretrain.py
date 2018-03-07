@@ -46,7 +46,8 @@ def main(FLAGS):
 			processed_images = reader.image(FLAGS.batch_size, FLAGS.image_size, FLAGS.image_size,
 			                                '/data1/neogong/dataset/COCO/train2017/', image_preprocessing_fn,
 			                                epochs=FLAGS.epoch)
-			generated = model.pretrained_net(processed_images, training=True)
+			middle = model.pretrained_net1(processed_images)
+			generated = model.pretrained_net2(tf.concat([middle, middle], axis=-1), training=True)
 			processed_generated = [image_preprocessing_fn(image, FLAGS.image_size, FLAGS.image_size)
 			                       for image in tf.unstack(generated, axis=0, num=FLAGS.batch_size)
 			                       ]
@@ -89,16 +90,20 @@ def main(FLAGS):
 			"""Prepare to Train"""
 			global_step = tf.Variable(0, name="global_step", trainable=False)
 
+			tf.logging.info('---------------------------variable to train------------------------------')
 			variable_to_train = []
 			for variable in tf.trainable_variables():
 				if not (variable.name.startswith(FLAGS.loss_model)):
 					variable_to_train.append(variable)
+					print(variable)
 			train_op = tf.train.AdamOptimizer(1e-3).minimize(loss, global_step=global_step, var_list=variable_to_train)
 
+			tf.logging.info('----------------------------variable to save-----------------------------')
 			variables_to_restore = []
 			for v in tf.global_variables():
 				if not (v.name.startswith(FLAGS.loss_model)):
 					variables_to_restore.append(v)
+					print(v)
 			saver = tf.train.Saver(variables_to_restore, write_version=tf.train.SaverDef.V1)
 
 			sess.run([tf.global_variables_initializer(), tf.local_variables_initializer()])
