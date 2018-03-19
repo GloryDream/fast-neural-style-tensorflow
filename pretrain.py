@@ -44,7 +44,7 @@ def main(FLAGS):
 				FLAGS.loss_model,
 				is_training=False)
 			processed_images = reader.image(FLAGS.batch_size, FLAGS.image_size, FLAGS.image_size,
-			                                '/data1/neogong/dataset/COCO/train2017/', image_preprocessing_fn,
+			                                '/data1/neogong/dataset/COCO/images/train2017/', image_preprocessing_fn,
 			                                epochs=FLAGS.epoch)
 			middle = model.pretrained_net1(processed_images)
 			generated = model.pretrained_net2(tf.concat([middle, middle], axis=-1), training=True)
